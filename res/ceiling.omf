@@ -1,0 +1,14 @@
+# ogle mesh file v 1
+# setting this to 16 instead of 1 for texture scaling
+# position			normal			 texture
+v -1.0 0.0 -1.0 0.0 -1.0 0.0  0.0 16.0
+v  1.0 0.0 -1.0 0.0 -1.0 0.0 16.0 16.0
+v  1.0 0.0  1.0 0.0 -1.0 0.0 16.0  0.0
+v -1.0 0.0  1.0 0.0 -1.0 0.0  0.0  0.0
+i 0
+i 1
+i 2
+i 2
+i 3
+i 0
+t res/ceiling.jpg texture_diffuse

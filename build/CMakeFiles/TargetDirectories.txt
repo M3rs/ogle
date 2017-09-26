@@ -1,0 +1,3 @@
+/Users/andy/Documents/src/ogle/build/CMakeFiles/edit_cache.dir
+/Users/andy/Documents/src/ogle/build/CMakeFiles/rebuild_cache.dir
+/Users/andy/Documents/src/ogle/build/CMakeFiles/ogle.dir

@@ -1,0 +1,13 @@
+# ogle mesh file v 1
+# trying texture coords 8 instead of 1 to repeat
+v -1.0 0.0 -1.0 0.0 1.0 0.0 0.0 8.0
+v  1.0 0.0 -1.0 0.0 1.0 0.0 8.0 8.0
+v  1.0 0.0  1.0 0.0 1.0 0.0 8.0 0.0
+v -1.0 0.0  1.0 0.0 1.0 0.0 0.0 0.0
+i 0
+i 1
+i 2
+i 2
+i 3
+i 0
+t res/wall.jpg texture_diffuse

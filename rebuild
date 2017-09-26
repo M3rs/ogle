@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "Remaking build folder"
+sudo rm -rf build
+mkdir build
+
+# copy requires scrips
+# TODO: move to CMakeLists.txt
+echo "Copying files to build | TODO: move to CMakeLists.txt"
+#cp test.lua level1.lua build/
+
+cd build
+# OLD: for compile_commands.json
+#cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .. -G Ninja
+CXX="$HOME/.vim/bin/cc_args.py g++" cmake .. -G Ninja
+
+ninja
+
+# copy .clang_complete and replace ../ with ./
+cd ..
+cp build/.clang_complete ./
+sed -i -e 's/\.\.\//\.\//g' .clang_complete
