@@ -1,2 +1,2 @@
 all:
-	clang++ main.cpp -std=c++11 -o test
+	clang++ main.cpp -std=c++14 -o test -llua

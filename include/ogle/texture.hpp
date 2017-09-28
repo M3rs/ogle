@@ -2,6 +2,7 @@
 #define OGLE_TEXTURE_HPP
 
 #include <string>
+#include <vector>
 #include "glad/glad.h"
 
 namespace ogle {
@@ -10,6 +11,8 @@ class Texture {
 public:
 
 	Texture(const std::string &filename);
+	// for Cubemaps!
+	Texture(const std::vector<std::string> faces);
 	~Texture();
 
 	/// This does not support multiple textures yet!

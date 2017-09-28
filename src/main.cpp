@@ -22,9 +22,86 @@ std::vector<float> get_vertices();
 std::vector<float> get_vert_V3N3();
 std::vector<float> get_vert_VNT();
 
+std::vector<float> getSkybox()
+{
+	std::vector<float> skyboxVertices = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+			
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
+	};
+
+	return skyboxVertices;
+}
+
+// TODO: move to own class in ogle namespace
+enum class RotAxis {
+	X,
+	Y,
+	Z,
+};
+
 struct Rotation {
 	float Degrees;
 	glm::vec3 Axis;
+
+	Rotation() : Degrees(0.0f) {}
+	Rotation(float Degrees, glm::vec3 Axis) : Degrees(Degrees), Axis(Axis) {}
+	Rotation(float Degrees, RotAxis axis) : Degrees(Degrees)
+	{
+		switch(axis) {
+			case RotAxis::X: 
+				Axis = glm::vec3(1.0f, 0.0f, 0.0f);
+				break;
+			case RotAxis::Y:
+				Axis = glm::vec3(0.0f, 1.0f, 0.0f);
+				break;
+			case RotAxis::Z:
+				Axis = glm::vec3(0.0f, 0.0f, 1.0f);
+				break;
+			default:
+				Axis = glm::vec3();
+				break;
+		}
+	}
 };
 class Transform {
 public:
@@ -142,8 +219,45 @@ int main() {
 	std::vector<Transform> wall_ts = {
 		Transform(glm::vec3(0.0f, 0.5f, -8.0f), Rotation{}, wall_scale),
 		Transform(glm::vec3(4.0f, 0.5f, -8.0f), Rotation{}, wall_scale),
-		Transform(glm::vec3(6.0f, 0.5f, -6.0f), Rotation{90.0f, glm::vec3(0.0f, 1.0f, 0.0f)}, wall_scale),
+		Transform(glm::vec3(6.25f, 0.5f, -6.25f), Rotation{90.0f, RotAxis::Y}, wall_scale),
+		//Transform(glm::vec3(6.25f, 0.5f, -6.25f), Rotation{90.0f, glm::vec3(0.0f, 1.0f, 0.0f)}, wall_scale),
 	};
+
+	// skybox
+	/*
+	std::vector<std::string> faces = {
+		"res/mp_orbital/orbital-element_rt.tga",
+		"res/mp_orbital/orbital-element_lf.tga",
+		"res/mp_orbital/orbital-element_up.tga",
+		"res/mp_orbital/orbital-element_dn.tga",
+		"res/mp_orbital/orbital-element_bk.tga",
+		"res/mp_orbital/orbital-element_ft.tga",
+	};
+	*/
+	std::vector<std::string> faces = {
+		"res/ame_nebula/purplenebula_rt.tga",
+		"res/ame_nebula/purplenebula_lf.tga",
+		"res/ame_nebula/purplenebula_up.tga",
+		"res/ame_nebula/purplenebula_dn.tga",
+		"res/ame_nebula/purplenebula_bk.tga",
+		"res/ame_nebula/purplenebula_ft.tga",
+	};
+	ogle::Texture cubeTexture { faces };
+
+	std::vector<float> cverts = getSkybox();
+
+	GLuint cubeVAO;
+  glGenVertexArrays(1, &cubeVAO);
+  glBindVertexArray(cubeVAO);
+
+  unsigned int cubeVBO;
+  glGenBuffers(1, &cubeVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+  glBufferData(GL_ARRAY_BUFFER, cverts.size() * sizeof(float), &cverts[0], GL_STATIC_DRAW);
+  glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);
+
+	ogle::Shader cubeShader {"res/sky.vert", "res/sky.frag"};
 
   // "loop"
   unsigned int lastTime = 0, currentTime = SDL_GetTicks();
@@ -192,6 +306,19 @@ int main() {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// draw sky first?
+		glDepthMask(GL_FALSE);
+		cubeShader.use();
+		cubeShader.set_float("skybox", 0);
+		glm::mat4 cview = glm::mat4(glm::mat3(view));
+		cubeShader.set_mat4("view", cview);
+		cubeShader.set_mat4("projection", projection);
+		glBindVertexArray(cubeVAO);
+		auto cubet = cubeTexture.get_id();
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubet);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDepthMask(GL_TRUE);
+	
     // bind texture before shader/vao/draw?
 
     // render
