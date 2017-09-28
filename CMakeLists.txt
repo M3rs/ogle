@@ -16,7 +16,7 @@ ENDIF (APPLE)
 # "FORCE" clears the cache (which has been causing a lot of issues
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -g" CACHE STRING "compile flags" FORCE)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(BREW /usr/local/Cellar)
 set(SDL ${BREW}/sdl2/2.0.5/)

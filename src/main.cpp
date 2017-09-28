@@ -12,8 +12,10 @@
 #include "ogle/camera.hpp"
 #include "ogle/shader.hpp"
 #include "ogle/texture.hpp"
-
 #include "ogle/model.hpp"
+#include "ogle/rotaxis.hpp"
+#include "ogle/rotation.hpp"
+#include "ogle/transform.hpp"
 
 void init_sdl_gl();
 void init_glad(SDL_Window *win);
@@ -72,53 +74,6 @@ std::vector<float> getSkybox()
 	return skyboxVertices;
 }
 
-// TODO: move to own class in ogle namespace
-enum class RotAxis {
-	X,
-	Y,
-	Z,
-};
-
-struct Rotation {
-	float Degrees;
-	glm::vec3 Axis;
-
-	Rotation() : Degrees(0.0f) {}
-	Rotation(float Degrees, glm::vec3 Axis) : Degrees(Degrees), Axis(Axis) {}
-	Rotation(float Degrees, RotAxis axis) : Degrees(Degrees)
-	{
-		switch(axis) {
-			case RotAxis::X: 
-				Axis = glm::vec3(1.0f, 0.0f, 0.0f);
-				break;
-			case RotAxis::Y:
-				Axis = glm::vec3(0.0f, 1.0f, 0.0f);
-				break;
-			case RotAxis::Z:
-				Axis = glm::vec3(0.0f, 0.0f, 1.0f);
-				break;
-			default:
-				Axis = glm::vec3();
-				break;
-		}
-	}
-};
-class Transform {
-public:
-	Transform(glm::vec3 trans, Rotation rot, glm::vec3 scale)
-		: Translation(trans), Rotate(rot), Scale(scale), Model(glm::mat4()) {
-			Model = glm::translate(Model, Translation);
-			if (Rotate.Degrees != 0.0f)
-				Model = glm::rotate(Model, glm::radians(Rotate.Degrees), Rotate.Axis);
-			Model = glm::scale(Model, Scale);
-		}
-
-	glm::vec3 Translation;
-	Rotation Rotate;
-	glm::vec3 Scale;
-	glm::mat4 Model;
-};
-
 int main() {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -163,6 +118,7 @@ int main() {
   ogle::Camera camera{w, h};
 
   // add lighting!!
+	/*
   GLuint lightVAO;
   glGenVertexArrays(1, &lightVAO);
   glBindVertexArray(lightVAO);
@@ -177,6 +133,7 @@ int main() {
   glEnableVertexAttribArray(0);
 
   ogle::Shader lampShader{"res/lamp.vert", "res/lamp.frag"};
+	*/
   glm::vec3 lightPos(1.2f, 1.75f, -2.0f); // making this higher
 	
 	std::vector<glm::vec3> positions = {
@@ -216,24 +173,13 @@ int main() {
 
 	glm::vec3 wall_scale = glm::vec3(4.0f, 3.0f, 0.5f);
 
-	std::vector<Transform> wall_ts = {
-		Transform(glm::vec3(0.0f, 0.5f, -8.0f), Rotation{}, wall_scale),
-		Transform(glm::vec3(4.0f, 0.5f, -8.0f), Rotation{}, wall_scale),
-		Transform(glm::vec3(6.25f, 0.5f, -6.25f), Rotation{90.0f, RotAxis::Y}, wall_scale),
-		//Transform(glm::vec3(6.25f, 0.5f, -6.25f), Rotation{90.0f, glm::vec3(0.0f, 1.0f, 0.0f)}, wall_scale),
+	std::vector<ogle::Transform> wall_ts = {
+		ogle::Transform(glm::vec3(0.0f, 0.5f, -8.0f), wall_scale),
+		ogle::Transform(glm::vec3(4.0f, 0.5f, -8.0f), wall_scale),
+		ogle::Transform(glm::vec3(6.25f, 0.5f, -6.25f), ogle::Rotation{90.0f, ogle::RotAxis::Y}, wall_scale),
 	};
 
 	// skybox
-	/*
-	std::vector<std::string> faces = {
-		"res/mp_orbital/orbital-element_rt.tga",
-		"res/mp_orbital/orbital-element_lf.tga",
-		"res/mp_orbital/orbital-element_up.tga",
-		"res/mp_orbital/orbital-element_dn.tga",
-		"res/mp_orbital/orbital-element_bk.tga",
-		"res/mp_orbital/orbital-element_ft.tga",
-	};
-	*/
 	std::vector<std::string> faces = {
 		"res/ame_nebula/purplenebula_rt.tga",
 		"res/ame_nebula/purplenebula_lf.tga",
@@ -383,13 +329,6 @@ int main() {
 		// draw floor
 		lightShader.set_mat4("model", floor_m);
 		floor_mesh.Draw(lightShader);
-		/*
-		glm::mat4 ceiling;
-		ceiling = glm::translate(ceiling, glm::vec3(0.0f, 2.0f, 0.0f));
-		ceiling = glm::scale(ceiling, floor_scale);
-		lightShader.set_mat4("model", ceiling);
-		floor_mesh.Draw(lightShader);
-		*/
 		lightShader.set_mat4("model", ceiling_m);
 		ceiling_mesh.Draw(lightShader);
 
@@ -416,7 +355,7 @@ int main() {
   // de-allocation
 	// TODO: Fix this!! Mesh dtor should clean up
   //glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  //glDeleteBuffers(1, &VBO);
   // glDeleteBuffers(1, &EBO); // unused atm
 
   SDL_GL_DeleteContext(ctx);
