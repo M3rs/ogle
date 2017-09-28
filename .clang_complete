@@ -6,4 +6,4 @@
 -Wl,-search_paths_first
 -Wl,-headerpad_max_install_names
 -Wl,-rpath,/usr/local/Cellar/sdl2/2.0.5/lib
--Wl,-rpath,/Users/andy/Documents/src/clones/assimp/build/code
+-Wl,-rpath,/Users/andy/Documents/src/clones/assimp/lib
