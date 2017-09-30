@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "sol.hpp"
 
@@ -25,8 +26,14 @@ int main()
 	lua.script("x()");
 	int x = 5;
 
-	int n = lua["n"];
+	int w = lua["window"]["w"];
 
-	std::cout << n << std::endl;
+	std::vector<std::string> items = lua["items"];
+	for (auto& i : items) {
+		std::cout << i << " ";
+	}
+	std::cout << std::endl;
+
+	std::cout << w << std::endl;
 
 }
