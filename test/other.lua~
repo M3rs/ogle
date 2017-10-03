@@ -1,0 +1,8 @@
+window = {
+	w = 640,
+	h = 480,
+}
+
+function s()
+   print('hi')
+end

@@ -1,0 +1,5 @@
+-- script loaded at start
+
+scripts = {
+   "skybox",
+}

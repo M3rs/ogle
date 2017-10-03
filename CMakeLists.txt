@@ -45,4 +45,4 @@ file (GLOB_RECURSE SOURCES "src/*.cpp" "src/*.c")
 
 add_executable(ogle ${SOURCES})
 
-target_link_libraries(ogle sdl2 ${GLLIB} assimp) # sdl2_image lua)
+target_link_libraries(ogle sdl2 ${GLLIB} assimp lua) # sdl2_image lua)

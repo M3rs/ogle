@@ -1,0 +1,30 @@
+#ifndef OGLE_SKYBOX_HPP
+#define OGLE_SKYBOX_HPP
+
+#include <vector>
+
+#include "glad/glad.hpp"
+
+#include "ogle/texture.hpp"
+
+namespace ogle {
+
+// fwd dclr
+class Shader;
+
+class Skybox {
+public:
+  
+  // void Draw(ogle::Shader &shader);
+
+private:
+  GLuint VAO;
+  GLuint VBO;
+
+  // texture
+  ogle::Texture Texture;
+  // shader  ?
+};
+}
+
+#endif // OGLE_SKYBOX_HPP

@@ -1,0 +1,1 @@
+((nil . ((eval . (set-local-keymap (kbd "<f5>") '(message "compile"))))))

@@ -1,0 +1,17 @@
+#include "ogle/texture.hpp"
+
+#include "ogle/shader.hpp"
+
+namespace ogle {
+
+  /*
+void Skybox::Draw(ogle::Shader &shader)
+{
+  // set depth
+  //glDepthFunc(GL_LEQUAL);
+  //shader.use();
+  //shader.set_float("skybox", 0);
+}
+  */
+  
+}
