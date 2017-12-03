@@ -1,0 +1,58 @@
+#include <iostream>
+
+#include <AL/al.h>
+#include <AL/alc.h>
+
+#include "wr.h"
+
+int main()
+{
+  ALCdevice *device;
+  ALCcontext *ctx;
+  
+  device = alcOpenDevice(0);
+  if (!device) {
+    std::cout << "device" << std::endl;
+    return 1;
+  }
+
+  ctx = alcCreateContext(device, 0);
+  alcMakeContextCurrent(ctx);
+  if (!ctx) {
+    std::cout << "ctx" << std::endl;
+    return 1;
+  }
+
+  ALuint source;
+  alGenSources((ALuint)1, &source);
+  alSourcef(source, AL_PITCH, 1);
+  alSourcef(source, AL_GAIN, 1);
+  alSource3f(source, AL_POSITION, 0, 0, 0);
+  alSource3f(source, AL_VELOCITY, 0, 0, 0);
+  alSourcei(source, AL_LOOPING, AL_FALSE);
+
+  ALuint buffer;
+  alGenBuffers((ALuint)1, &buffer);
+  //WAV* wav = WRCreate("airlock_door_open.wav");
+  WAV* wav = WRCreate("b3.wav");
+  alBufferData(buffer, AL_FORMAT_MONO16, wav->data, wav->size, wav->sample_rate);
+  WRDestroy(wav);
+
+  alSourcei(source, AL_BUFFER, buffer);
+
+  alSourcePlay(source);
+
+  ALint source_state;
+  alGetSourcei(source, AL_SOURCE_STATE, &source_state);
+  while(source_state == AL_PLAYING) {
+    alGetSourcei(source, AL_SOURCE_STATE, &source_state);
+  }
+
+  alDeleteSources(1, &source);
+  alDeleteBuffers(1, &buffer);
+  alcMakeContextCurrent(0);
+  alcDestroyContext(ctx);
+  alcCloseDevice(device);
+
+  return 0;
+}

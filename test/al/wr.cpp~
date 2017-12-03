@@ -1,0 +1,11 @@
+#include <iostream>
+#include <stdio.h>
+int main()
+{
+  FILE* f = fopen("airlock_door_open.wav");
+  char riff[4];
+  fread(&riff, sizeof(char), 4, f);
+
+  fclose(f)
+
+}

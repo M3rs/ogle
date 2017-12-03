@@ -11,20 +11,18 @@ namespace ogle {
 
 class Transform {
 public:
-	Transform(glm::vec3 trans);
-	Transform(glm::vec3 trans, glm::vec3 scale);
-	Transform(glm::vec3 trans, Rotation rot, glm::vec3 scale);
+  Transform(glm::vec3 trans);
+  Transform(glm::vec3 trans, glm::vec3 scale);
+  Transform(glm::vec3 trans, Rotation rot, glm::vec3 scale);
 
-	glm::vec3 Translation;
-	Rotation Rotate;
-	glm::vec3 Scale;
-	glm::mat4 Model;
+  glm::vec3 Translation;
+  Rotation Rotate;
+  glm::vec3 Scale;
+  glm::mat4 Model; // todo - make a "get" method?
 
 private:
-
-	void calc_model();
+  void calc_model();
 };
-
 }
 
 #endif // OGLE_TRANSFORM_HPP

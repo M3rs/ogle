@@ -21,6 +21,8 @@ public:
   
   void Draw(glm::mat4 &view, glm::mat4 &projection);
 
+  // TODO: move ctor / assignment ??
+
 private:
   GLuint m_VAO;
   GLuint m_VBO;

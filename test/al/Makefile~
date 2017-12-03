@@ -1,0 +1,5 @@
+LDFLAGS=-L/usr/local/opt/openal-soft/lib
+CPPFLAGS=-I/usr/local/opt/openal-soft/include
+
+all:
+	g++ main.cpp $(LDFLAGS) $(CPPFLAGS)

@@ -6,6 +6,7 @@ end
 
 scripts = {
    "skybox",
+   "flashlight",
 }
 
 for k,v in pairs(scripts) do

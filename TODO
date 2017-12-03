@@ -1,0 +1,8 @@
+- clean up window/context creation/clean up into "Renderer" class
+- find anything that does:
+	lightShader.set_mat4("model", some_mat4);
+	foo.Draw(lightShader);
+
+	// abstract into thing
+
+- work on cleaning up open gl memory / buffers

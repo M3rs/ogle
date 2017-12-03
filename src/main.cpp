@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <glad/glad.h>
 
+#include "ogle/debug.hpp"
+
 // LUA
 #include "sol/sol.hpp"
 #include "sol/helpers.hpp"
@@ -16,19 +18,32 @@
 // OGLE
 #include "ogle/ogle.hpp"
 #include "ogle/skybox.hpp"
+#include "ogle/light.hpp"
 
 void init_sdl_gl();
 void init_glad(SDL_Window *win);
 
+sol::state init_lua(const std::string& startup)
+{
+  sol::state lua;
+  lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
+  lua["glmvec3"] = [](float x, float y, float z) { return glm::vec3(x,y,z);};
+  
+  lua.do_file(startup);
+
+  return std::move(lua);
+}
+
 int main() {
 
   // TODO: engine class
-  
-  sol::state lua;
-  lua.open_libraries(sol::lib::base, sol::lib::package);
+  DEBUG("ENABLED");
+    
   std::string startup = "res/scripts/startup.lua";
-  lua.do_file(startup);
-  
+  sol::state lua = init_lua(startup);
+
+  glm::vec3 lamb = lua["light"]["specular"];
+  std::cout << "lua vec3: " << lamb.x << " " << lamb.y << std::endl;
   // TODO: texture cache
   // TODO: method to clean up VAO / VBO that aren't being for whatever reason (maybe mesh / models?)
   
@@ -85,6 +100,8 @@ int main() {
 
   // load model
   // ogle::Model ourModel("res/objects/nano/nanosuit.obj");
+  ogle::Model robot("res/objects/robot_inprogress.obj");
+  ogle::Model forklift("res/objects/forklift.obj");
 
   // floor:
   ogle::Mesh floor_mesh("res/floor.omf");
@@ -117,10 +134,29 @@ int main() {
                       ogle::Rotation{90.0f, ogle::RotAxis::Y}, wall_scale),
   };
 
-  // skybox
-  sol::table skybox_table = lua["skybox"];
-  ogle::Skybox skybox { skybox_table };
+  // TODO "Drawable"
+  /*
+    Draw(shader), should contain model (aka transform)
 
+    Give it:
+
+    ogle::Transform xform    
+    ogle::Shader* sptr
+    void Draw(ogle::Shader shader)
+
+    Draw()
+    {
+    sptr->set_mat4("model", xform.model);
+    Draw(*sptr);
+    }
+   */
+
+  // way to set light shader properties
+
+  // skybox
+  ogle::Skybox skybox { lua.get<sol::table>("skybox") };
+
+  ogle::Light light_s { lua.get<sol::table>("light") };
 
   // "loop"
   unsigned int lastTime = 0, currentTime = SDL_GetTicks();
@@ -183,6 +219,13 @@ int main() {
     lightShader.set_mat4("projection", projection);
     lightShader.set_vec3("viewPos", camera.get_pos());
 
+    light_s.position = camera.get_pos();
+    light_s.direction = camera.get_dir();
+
+    lightShader.set_light(light_s);
+
+    lightShader.set_float("material.shininess", 64.0f);
+    /*
     glm::vec3 ldiffuse = glm::vec3(0.9f, 0.9f, 0.9f);
     // glm::vec3 ldiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
     // lightShader.set_vec3("light.position", lightPos);
@@ -192,7 +235,9 @@ int main() {
     lightShader.set_float("light.cutOff", glm::cos(glm::radians(12.5f)));
     lightShader.set_float("light.outerCutOff", glm::cos(glm::radians(17.5f)));
 
-    lightShader.set_vec3("light.ambient", glm::vec3(0.3f, 0.3f, 0.3f));
+    float amb = 0.6f;
+    //lightShader.set_vec3("light.ambient", glm::vec3(0.3f, 0.3f, 0.3f));
+    lightShader.set_vec3("light.ambient", glm::vec3(amb, amb, amb));
     lightShader.set_vec3("light.diffuse", ldiffuse);
     lightShader.set_vec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
     lightShader.set_float("material.shininess", 64.0f);
@@ -201,26 +246,23 @@ int main() {
     lightShader.set_float("light.constant", 1.0f);
     lightShader.set_float("light.linear", 0.09f);
     lightShader.set_float("light.quadratic", 0.032f);
-    // lightShader.set_float("light.linear", 0.35f);
-    // lightShader.set_float("light.quadratic", 0.044f);
-
-    /*
-    glm::vec3 mpos = camera.get_pos();
-    //glm::vec3 mpos;
-    mpos.x += 0.1f;
-    mpos.z -= 1.0f;
-    mpos.y -= 1.5f;
-    glm::mat4 model;
-    model = glm::translate(model, mpos);
-    model = glm::scale(model, glm::vec3(0.10f, 0.10f, 0.10f));
-    model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f,
-    0.0f));
-
-
-    lightShader.set_mat4("model", model);
-    ourModel.Draw(lightShader);
     */
 
+    float robotscale = 0.5f;
+    glm::mat4 model;
+    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(robotscale, robotscale, robotscale));
+    lightShader.set_mat4("model", model);
+    robot.Draw(lightShader);
+
+    float flscale = 0.8f;
+    glm::mat4 flmodel;
+    flmodel = glm::translate(flmodel, glm::vec3(-2.0f, 0.5f, -3.0f));
+    flmodel = glm::scale(flmodel, glm::vec3(flscale, flscale, flscale));
+    lightShader.set_mat4("model", flmodel);
+    forklift.Draw(lightShader);
+
+    lightShader.use();
     // draw multiple crates
     for (auto &p : positions) {
       glm::mat4 m;
@@ -236,11 +278,11 @@ int main() {
       wall_mesh.Draw(lightShader);
     }
 
-    // draw floor
+    // draw floor / ceiling
     lightShader.set_mat4("model", floor_m);
     floor_mesh.Draw(lightShader);
-    lightShader.set_mat4("model", ceiling_m);
-    ceiling_mesh.Draw(lightShader);
+    //lightShader.set_mat4("model", ceiling_m);
+    //ceiling_mesh.Draw(lightShader);
 
     // draw skybox
     skybox.Draw(view, projection);

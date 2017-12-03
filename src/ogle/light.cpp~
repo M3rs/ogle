@@ -1,0 +1,12 @@
+#include "ogle/light.hpp"
+
+#include "sol/sol.hpp"
+
+namespace ogle {
+
+  Light::Light(const sol::table& t)
+  {
+
+  }
+  
+}

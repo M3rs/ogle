@@ -1,0 +1,14 @@
+#ifndef OGLE_LIGHT_HPP
+#define OGLE_LIGHT_HPP
+
+namespace ogle {
+  
+class Light {
+
+  
+  
+};
+
+}
+
+#endif // OGLE_LIGHT_HPP

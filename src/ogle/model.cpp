@@ -82,13 +82,16 @@ ogle::Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 	std::vector<ogle::Texture> diffuseMaps = loadMaterialTextures(material,
 			aiTextureType_DIFFUSE, "texture_diffuse");
-	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	std::move(diffuseMaps.begin(), diffuseMaps.end(), std::back_inserter(textures));
+	
 	std::vector<ogle::Texture> specularMaps = loadMaterialTextures(material,
 			aiTextureType_SPECULAR, "texture_specular");
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	std::move(specularMaps.begin(), specularMaps.end(), std::back_inserter(textures));
 	//}
 	
-	return Mesh(vertices, indices, textures);
+	return Mesh(vertices, indices, std::move(textures));
 }
 
 std::vector<ogle::Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)

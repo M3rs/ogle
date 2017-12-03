@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "ogle/debug.hpp"
+
 namespace {
 std::istream &operator>>(std::istream &in, glm::vec3 &v) {
   in >> v.x;
@@ -25,7 +27,7 @@ namespace ogle {
 Mesh::Mesh(std::vector<ogle::Vertex> vertices,
            std::vector<unsigned int> indices,
            std::vector<ogle::Texture> textures)
-    : vertices(vertices), indices(indices), textures(textures) {
+    : vertices(vertices), indices(indices), textures(std::move(textures)) {
   bind_gl();
 }
 
@@ -59,13 +61,28 @@ Mesh::Mesh(const std::string &filename) {
       ss >> name >> type;
       ogle::Texture texture{name};
       texture.set_type(type);
-      textures.push_back(texture);
+      textures.push_back(std::move(texture));
       break;
     }
     }
   }
 
   bind_gl();
+}
+
+Mesh::~Mesh() {
+  if (VAO) {
+    DEBUG("Cleaning up VAO " << VAO);
+    glDeleteVertexArrays(1, &VAO);
+  }
+  if (VBO) {
+    DEBUG("Cleaning up VBO " << VBO);
+    glDeleteBuffers(1, &VBO);
+  }
+  if (EBO) {
+    DEBUG("Cleaning up EBO " << EBO);
+    glDeleteBuffers(1, &EBO);
+  }
 }
 
 void Mesh::Draw(ogle::Shader &shader) {
@@ -93,6 +110,32 @@ void Mesh::Draw(ogle::Shader &shader) {
   glBindVertexArray(0);
 }
 
+  // for move
+  Mesh::Mesh() : VAO(0), VBO(0), EBO(0) {}
+  Mesh::Mesh(Mesh&& other)
+  {
+    std::swap(vertices, other.vertices);
+    std::swap(indices, other.indices);
+    std::swap(textures, other.textures);
+
+    std::swap(VAO, other.VAO);
+    std::swap(VBO, other.VBO);
+    std::swap(EBO, other.EBO);
+  }
+
+  Mesh& Mesh::operator=(Mesh&& other)
+  {
+    std::swap(vertices, other.vertices);
+    std::swap(indices, other.indices);
+    std::swap(textures, other.textures);
+
+    std::swap(VAO, other.VAO);
+    std::swap(VBO, other.VBO);
+    std::swap(EBO, other.EBO);
+    
+    return *this;
+  }
+  
 void Mesh::bind_gl() {
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);

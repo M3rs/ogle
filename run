@@ -1,6 +1,6 @@
 #!/bin/bash
 
 # optional?
-sudo ./compile
+./compile
 
 ./build/ogle

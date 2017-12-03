@@ -28,6 +28,12 @@ Skybox::Skybox(sol::table skybox)
 
 Skybox::~Skybox() {
   // TODO: clean up VAO, VBO, etc
+  if (m_VAO) {
+    glDeleteVertexArrays(1, &m_VAO);
+  }
+  if (m_VBO) {
+    glDeleteBuffers(1, &m_VBO);
+  }
 }
 
 void Skybox::Draw(glm::mat4 &view, glm::mat4 &projection) {

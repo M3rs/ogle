@@ -1,0 +1,14 @@
+#ifndef O_WR_H
+#define O_WR_H
+
+typedef struct wav_t {
+  short format;
+  short num_channels;
+  uint sample_rate; // frequency
+  short bitsPerSample;
+  uint size;
+  char* data;
+
+} WAV;
+
+#endif // O_WR_H
