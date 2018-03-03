@@ -1,1 +1,2 @@
-((nil . ((eval . (set-local-keymap (kbd "<f5>") '(message "compile"))))))
+((nil . ((eval . (setq flycheck-clang-include-path
+		       (list (expand-file-name "include/")))))))

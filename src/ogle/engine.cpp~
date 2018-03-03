@@ -1,0 +1,14 @@
+#include "ogle/engine.hpp"
+
+#include <iostream>
+
+namespace ogle {
+
+  Engine::Engine() {}
+  
+  Engine::~Engine() {
+    std::cout << "Engine shup down" << std::endl;
+    SDL_Quit();
+  }
+  
+}

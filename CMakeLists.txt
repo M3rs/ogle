@@ -18,11 +18,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -g" CACHE STRING "compile fla
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-#add_definitions(-DDEBUG_LOG)
+# add_definitions(-DDEBUG_LOG)
 
 set(BREW /usr/local/Cellar)
 set(SDL ${BREW}/sdl2/2.0.5/)
 set(AIMP ~/Documents/src/clones/assimp)
+set(FT ${BREW}/freetype/2.8.1/)
 #set(IMG ${BREW}/sdl2_image/2.0.1_2)
 #set(LUA ${BREW}/lua/5.2.4_4)
 
@@ -32,7 +33,8 @@ include_directories(
 	#"${IMG}/include"
 	#"${LUA}/include"
 	"${AIMP}/include"
-  "~/Documents/src/ogle/include"
+	"~/Documents/src/ogle/include"
+	"${FT}/include/freetype2"
 )
 
 link_directories(
@@ -40,6 +42,7 @@ link_directories(
 "${AIMP}/lib"
 #"${IMG}/lib"
 #"${LUA}/lib"
+"${FT}/lib"
 )
 
 # GLOB_RECURSE will search all sub directories in src! (super cool)
@@ -47,4 +50,4 @@ file (GLOB_RECURSE SOURCES "src/*.cpp" "src/*.c")
 
 add_executable(ogle ${SOURCES})
 
-target_link_libraries(ogle sdl2 ${GLLIB} assimp lua) # sdl2_image lua)
+target_link_libraries(ogle sdl2 ${GLLIB} assimp lua freetype) # sdl2_image lua)

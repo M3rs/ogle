@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 
+// fwd
+typedef struct FT_GlyphSlotRec_* FT_GlyphSlot;
+
+
 namespace ogle {
 
 class Texture {
@@ -12,10 +16,11 @@ public:
   Texture(const std::string &filename);
   // for Cubemaps!
   Texture(const std::vector<std::string> faces);
+  Texture(FT_GlyphSlot glyph);
   ~Texture();
 
   /// This does not support multiple textures yet!
-  void bind();
+  void bind() const;
 
   GLuint get_id();
 

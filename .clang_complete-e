@@ -2,4 +2,10 @@
 -I/usr/local/Cellar/sdl2/2.0.5/include/SDL2
 -I/Users/andy/Documents/src/clones/assimp/include
 -I../include
+-I/usr/local/Cellar/freetype/2.8.1/include/freetype2
 -std=c++1y
+-Wl,-search_paths_first
+-Wl,-headerpad_max_install_names
+-Wl,-rpath,/usr/local/Cellar/sdl2/2.0.5/lib
+-Wl,-rpath,/Users/andy/Documents/src/clones/assimp/lib
+-Wl,-rpath,/usr/local/Cellar/freetype/2.8.1/lib

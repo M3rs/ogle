@@ -1,0 +1,18 @@
+#ifndef OGLE_DRAWING_BASICMESH_HPP
+#define OGLE_DRAWING_BASICMESH_HPP
+
+#include "ogle/drawing/drawable.hpp"
+#include "ogle/shader.hpp"
+
+namespace ogle {
+  namespace drawing {
+    
+class BasicMesh : public Drawable {
+public:
+  
+};
+
+  }
+}
+
+#endif // OGLE_DRAWING_BASICMESH_HPP

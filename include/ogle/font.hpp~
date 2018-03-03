@@ -1,0 +1,15 @@
+#ifndef OGLE_FONT_HPP
+#define OGLE_FONT_HPP
+
+namespace ogle {
+
+class Font {
+public:
+  Font(int size);
+
+  bool load
+};
+  
+}
+
+#endif // OGLE_FONT_HPP

@@ -1,0 +1,15 @@
+#ifndef OGLE_DRAWING_BASICMODEL_HPP
+#define OGLE_DRAWING_BASICMODEL_HPP
+
+#include "ogle/drawing/drawable.hpp"
+
+#incldue "ogle/transform.hpp"
+
+namespace ogle {
+
+  namespace drawing {
+
+  }
+}
+
+#endif // OGLE_DRAWING_BASICMODEL_HPP

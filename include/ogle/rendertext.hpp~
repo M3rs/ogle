@@ -1,0 +1,39 @@
+#ifndef OGLE_RENDERTEXT_HPP
+#define OGLE_RENDERTEXT_HPP
+
+#include <string>
+#include "ogle/shader.hpp"
+#include "ogle/font.hpp"
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+
+namespace ogle {
+  
+class RenderText {
+public:
+  RenderText(const std::string &text, ogle::Font& font, glm::mat4 projection);
+
+  void set_text(const std::string& text);
+  void set_position(GLfloat x, GLfloat y);
+  void set_color(const glm::vec3& color);
+
+  void Draw(ogle::Shader &shader);
+
+private:
+  std::string text;
+  ogle::Font& font;
+  glm::vec3 color;
+  GLuint VAO;
+  GLuint VBO;
+
+  GLfloat x;
+  GLfloat y;
+
+  glm::mat4 projection;
+
+  void init_gl();
+};
+
+}
+
+#endif // OGLE_RENDERTEXT_HPP

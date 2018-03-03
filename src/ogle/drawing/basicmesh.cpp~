@@ -1,0 +1,12 @@
+#include "ogle/drawing/basicmesh.hpp"
+
+namespace ogle {
+  namespace drawing {
+
+    BasicMesh::BasicMesh(Mesh& mesh, Shader &shader, Transform transform)
+    {
+      
+    }
+
+  }
+}

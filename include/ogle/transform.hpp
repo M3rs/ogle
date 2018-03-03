@@ -11,7 +11,9 @@ namespace ogle {
 
 class Transform {
 public:
+  Transform();
   Transform(glm::vec3 trans);
+  Transform(glm::vec3 trans, float scale);
   Transform(glm::vec3 trans, glm::vec3 scale);
   Transform(glm::vec3 trans, Rotation rot, glm::vec3 scale);
 

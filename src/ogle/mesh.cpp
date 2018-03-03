@@ -110,32 +110,30 @@ void Mesh::Draw(ogle::Shader &shader) {
   glBindVertexArray(0);
 }
 
-  // for move
-  Mesh::Mesh() : VAO(0), VBO(0), EBO(0) {}
-  Mesh::Mesh(Mesh&& other)
-  {
-    std::swap(vertices, other.vertices);
-    std::swap(indices, other.indices);
-    std::swap(textures, other.textures);
+// for move
+Mesh::Mesh() : VAO(0), VBO(0), EBO(0) {}
+Mesh::Mesh(Mesh &&other) {
+  std::swap(vertices, other.vertices);
+  std::swap(indices, other.indices);
+  std::swap(textures, other.textures);
 
-    std::swap(VAO, other.VAO);
-    std::swap(VBO, other.VBO);
-    std::swap(EBO, other.EBO);
-  }
+  std::swap(VAO, other.VAO);
+  std::swap(VBO, other.VBO);
+  std::swap(EBO, other.EBO);
+}
 
-  Mesh& Mesh::operator=(Mesh&& other)
-  {
-    std::swap(vertices, other.vertices);
-    std::swap(indices, other.indices);
-    std::swap(textures, other.textures);
+Mesh &Mesh::operator=(Mesh &&other) {
+  std::swap(vertices, other.vertices);
+  std::swap(indices, other.indices);
+  std::swap(textures, other.textures);
 
-    std::swap(VAO, other.VAO);
-    std::swap(VBO, other.VBO);
-    std::swap(EBO, other.EBO);
-    
-    return *this;
-  }
-  
+  std::swap(VAO, other.VAO);
+  std::swap(VBO, other.VBO);
+  std::swap(EBO, other.EBO);
+
+  return *this;
+}
+
 void Mesh::bind_gl() {
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);

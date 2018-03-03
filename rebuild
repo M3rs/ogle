@@ -3,6 +3,7 @@
 echo "Remaking build folder"
 sudo rm -rf build
 mkdir build
+sudo chown -R `whoami` build
 
 # copy requires scrips
 # TODO: move to CMakeLists.txt

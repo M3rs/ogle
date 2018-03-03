@@ -3,6 +3,9 @@
 #include "stb/stb_image.h"
 #include <iostream>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "ogle/debug.hpp"
 
 namespace ogle {
@@ -80,6 +83,24 @@ Texture::Texture(const std::vector<std::string> faces) {
   ID = texture;
 }
 
+Texture::Texture(FT_GlyphSlot glyph)
+{
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, glyph->bitmap.width,
+                 glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
+                 glyph->bitmap.buffer);
+
+    // set texture options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    ID = texture;
+}
+  
 Texture::~Texture() {
   if (ID) {
     DEBUG("Cleaning up texture " << ID);
@@ -87,7 +108,7 @@ Texture::~Texture() {
   }
 }
 
-void Texture::bind() { glBindTexture(GL_TEXTURE_2D, ID); }
+void Texture::bind() const { glBindTexture(GL_TEXTURE_2D, ID); }
 
 GLuint Texture::get_id() { return ID; }
 

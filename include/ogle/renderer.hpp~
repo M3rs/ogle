@@ -1,0 +1,23 @@
+#ifndef OGLE_RENDERER_HPP
+#define OGLE_RENDERER_HPP
+
+#include <string>
+#include <SDL2/SDL.h>
+
+namespace ogle {
+
+  class Renderer {
+  public:
+    Renderer(const std::string& title, int width, int height, bool fullscreen);
+
+  private:
+    SDL_Window* win;
+    SDL_GLContext ctx;
+
+    int width;
+    int height;
+  };
+  
+}
+
+#endif // OGLE_RENDERER_HPP

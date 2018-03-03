@@ -1,0 +1,18 @@
+#ifndef OGLE_DRAWING_DRAWABLE_HPP
+#define OGLE_DRAWING_DRAWABLE_HPP
+
+namespace ogle {
+  // fwd
+  class Shader;
+  
+  namespace drawing {
+    
+class Drawable {
+public:
+  virtual void Draw(Shader &shader);
+};
+
+  }
+}
+
+#endif // OGLE_DRAWING_DRAWABLE_HPP

@@ -9,6 +9,8 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+
+namespace {
 std::string read_file(const std::string &filename) {
   std::ifstream f{filename};
   using Fbuf = std::istreambuf_iterator<char>;
@@ -36,6 +38,7 @@ GLuint load_shader(const std::string &filename, GLenum type) {
   check_shader(shader);
 
   return shader;
+}
 }
 
 namespace ogle {
