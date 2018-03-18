@@ -6,6 +6,7 @@
 
 namespace ogle {
 
+  // TODO fix bug with textures in skybox
 /// Assumes table has faces / vertices tables
 Skybox::Skybox(sol::table skybox)
   : m_Texture(ogle::get_vector<std::string>(skybox["faces"]))
@@ -38,14 +39,15 @@ Skybox::~Skybox() {
 
 void Skybox::Draw(glm::mat4 &view, glm::mat4 &projection) {
   glDepthFunc(GL_LEQUAL);
-  m_Shader.use();
-  m_Shader.set_float("skybox", 0);
+    m_Shader.use();
+  //m_Shader.set_float("skybox", 0);
   glm::mat4 cview = glm::mat4(glm::mat3(view));
   m_Shader.set_mat4("view", cview);
   m_Shader.set_mat4("projection", projection);
 
   glBindVertexArray(m_VAO);
   auto cubet = m_Texture.get_id();
+  //glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, cubet);
   glDrawArrays(GL_TRIANGLES, 0, 36);
   glDepthFunc(GL_LESS);

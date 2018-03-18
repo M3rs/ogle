@@ -17,6 +17,10 @@ namespace ogle {
 
     void clear();
     void swap();
+
+    SDL_Window* get_window();
+
+    void set_debug(bool debug);
     
   private:
     SDL_Window* win;
@@ -28,6 +32,8 @@ namespace ogle {
     /// window height is adjusted by fullscreen
     int win_width;
     int win_height;
+
+    bool debug;
   };
   
 }

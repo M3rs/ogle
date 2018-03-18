@@ -1,8 +1,9 @@
-- clean up window/context creation/clean up into "Renderer" class
-- find anything that does:
-	lightShader.set_mat4("model", some_mat4);
-	foo.Draw(lightShader);
+- More with GUI
+  - Bars, 2D sprites, etc
+- Get more sound effects
+  - wind, foot steps, etc
+- "Scene" object
+  - things being draw, sounds playing, etc
+- Cache objects
+  - Mesh/Models? Sounds?
 
-	// abstract into thing
-
-- work on cleaning up open gl memory / buffers

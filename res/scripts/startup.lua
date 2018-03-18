@@ -5,7 +5,7 @@ function load(script)
 end
 
 scripts = {
-   "skybox",
+   "skybox_a",
    "flashlight",
 }
 

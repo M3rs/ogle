@@ -1,0 +1,19 @@
+#include "source.h"
+
+#include "wav.h"
+
+namespace sf {
+
+  Source::Source()
+    : source(0)
+  {
+    alGenSources(1, &source);
+  }
+
+  Source::~Source() {
+    if (source) {
+      alDeleteSources(1, &source);
+    }
+  }
+  
+}

@@ -1,0 +1,7 @@
+AL = /usr/local/Cellar/openal-soft/1.18.2
+ALUT = /usr/local/Cellar/freealut/1.1.0
+INCS = -I ${AL}/include -I ${ALUT}/include
+LIBS = -L ${AL}/lib -L ${ALUT}/lib
+
+all:
+	g++ -g main.cpp ${INCS} ${LIBS} -lopenal -lalut

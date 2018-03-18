@@ -7,7 +7,7 @@ namespace ogle {
 
 Renderer::Renderer(const std::string &title, int width, int height,
                    bool fullscreen)
-    : width(width), height(height), win_width(0), win_height(0) {
+  : width(width), height(height), win_width(0), win_height(0), debug(false) {
   int flags = SDL_WINDOW_OPENGL;
   if (fullscreen) {
     flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -61,15 +61,25 @@ Renderer::~Renderer() {
 
 SDL_Point Renderer::window_size() const { return {win_width, win_height}; }
 
-  void Renderer::grab_mouse()
-  {
-    SDL_WarpMouseInWindow(win, win_width / 2, win_height / 2);
+void Renderer::grab_mouse() {
+  if (debug) {
+    return;
   }
   
+  SDL_WarpMouseInWindow(win, win_width / 2, win_height / 2);
+}
+
 void Renderer::clear() {
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::swap() { SDL_GL_SwapWindow(win); }
+
+  SDL_Window * Renderer::get_window() { return win; }
+
+  void Renderer::set_debug(bool debug)
+  {
+    this->debug = debug;
+  }
 }

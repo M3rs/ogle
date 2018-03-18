@@ -10,7 +10,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd /Users/andy/Documents/models/forklift.png
+map_Kd forklift.png
 
 newmtl None
 Ns 0

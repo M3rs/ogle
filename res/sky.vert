@@ -8,8 +8,13 @@ uniform mat4 view;
 
 void main()
 {
-	TexCoords = aPos;
-	//gl_Position = projection * view * vec4(aPos, 1.0);
-	vec4 pos = projection * view * vec4(aPos, 1.0);
-	gl_Position = pos.xyww;
+  TexCoords = aPos;
+  //gl_Position = projection * view * vec4(aPos, 1.0);
+  //vec4 pos = projection * view * vec4(aPos, 1.0);
+  
+  // important to reverse the Y coordinates for some reason.
+  // I haven't quite figured out why. But the TOP needs to be rotated
+  // like 90 degrees, but I'm not sure how.
+  vec4 pos = projection * view * vec4(aPos.x, aPos.y * -1, aPos.z, 1.0);
+  gl_Position = pos.xyww;
 }

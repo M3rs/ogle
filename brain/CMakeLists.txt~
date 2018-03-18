@@ -1,0 +1,11 @@
+project(sfx)
+
+cmake_minimum_required(VERSION 3.1)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -g" CACHE STRING "compile flags" FORCE)
+
+find_library(OAL OpenAL)
+
+add_executable(sfx main.cpp wav.cpp sff.cpp)
+
+target_link_libraries(sfx ${OAL})

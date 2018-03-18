@@ -1,0 +1,19 @@
+#ifndef OGLE_SF_SOURCE_H
+#define OGLE_SF_SOURCE_H
+
+#include <OpenAL/al.h>
+
+namespace sf {
+
+  /// Sound Source
+  class Source {
+  public:
+    Source();
+    ~Source();
+
+  private:
+    ALuint source;
+  };
+}
+
+#endif // OGLE_SF_SOURCE_H

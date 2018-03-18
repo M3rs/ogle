@@ -13,18 +13,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 // OGLE
-#include "ogle/engine.hpp"
-#include "ogle/renderer.hpp"
-#include "ogle/debug.hpp"
-#include "ogle/light.hpp"
+#include "ogle/drawing/drawing.hpp"
 #include "ogle/ogle.hpp"
-#include "ogle/skybox.hpp"
+#include "ogle/sf/sf.hpp"
 
-#include "ogle/drawing/drawable.hpp"
-#include "ogle/drawing/basicmesh.hpp"
-#include "ogle/drawing/basicmodel.hpp"
+// IMGUI
+#include "imgui.h"
+#include "imgui_impl_sdl_gl3.h"
 
 sol::state init_lua(const std::string &startup) {
   sol::state lua;
@@ -33,7 +31,7 @@ sol::state init_lua(const std::string &startup) {
 
   lua.do_file(startup);
 
-  return std::move(lua);
+  return lua;
 }
 
 int main() {
@@ -53,11 +51,17 @@ int main() {
     return 1;
   }
 
-  int ww = 1024; // 512
-  int wh = 768;  // 512
-  ogle::Renderer renderer {"ogle", ww, wh, false};
-  
+  int ww = 1024;                                  // 512
+  int wh = 512;                                   // 768;  // 512
+  ogle::Renderer renderer{"ogle", ww, wh, false}; // true};
+
   // END INIT
+
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  ImGui_ImplSdlGL3_Init(renderer.get_window());
+  ImGui::StyleColorsDark();
 
   // font related
   ogle::Font font{48};
@@ -66,12 +70,17 @@ int main() {
     return 0;
   }
 
-  glm::mat4 projection_ui = glm::ortho(0.0f, (float)ww, 0.0f, (float)wh);
+  auto win_size = renderer.window_size();
+  int w = win_size.x;
+  int h = win_size.y;
+
+  // glm::mat4 projection_ui = glm::ortho(0.0f, (float)ww, 0.0f, (float)wh);
+  glm::mat4 projection_ui = glm::ortho(0.0f, (float)w, 0.0f, (float)h);
   ogle::RenderText text{"testing", font, projection_ui};
   text.set_color(glm::vec3(1.0, 0.0, 0.0));
   ogle::RenderText sample("Sample", font, projection_ui);
   sample.set_color(glm::vec3(1.0, 1.0, 1.0));
-  sample.set_position(25, 25);
+  sample.set_position(25, h - 35);
 
   ogle::Shader f_shader{"res/text.vert", "res/text.frag"};
 
@@ -80,9 +89,6 @@ int main() {
 
   // IMPORTANT!: because we are using "full screen" it is umportant that
   // we use SDL_GetWindowSize to get the actual window size
-  auto win_size = renderer.window_size();
-  int w = win_size.x;
-  int h = win_size.y;
 
   float aspect = (float)w / (float)h;
   glm::mat4 projection;
@@ -91,47 +97,54 @@ int main() {
   ogle::Camera camera{w, h};
 
   // add lighting!!
-  glm::vec3 lightPos(1.2f, 1.75f, -2.0f); // making this higher
+  // glm::vec3 lightPos(1.2f, 1.75f, -2.0f); // making this higher
 
-  std::vector<ogle::drawing::Drawable*> draw_list;
+  std::vector<ogle::drawing::Drawable *> draw_list;
 
   // load model
   // ogle::Model ourModel("res/objects/nano/nanosuit.obj");
 
   ogle::Model forklift("res/objects/forklift.obj");
-  ogle::drawing::BasicModel flmodel { forklift, lightShader,
-				      { glm::vec3(-2.0f, 0.5f, -3.0f), 0.8f } };
+  ogle::drawing::BasicModel flmodel{
+      forklift, lightShader, {glm::vec3(-2.0f, 0.5f, -3.0f), 0.8f}};
   draw_list.push_back(&flmodel);
-  
+
   ogle::Model robot("res/objects/robot_inprogress.obj");
-  float robotscale = 0.5f;
-  ogle::Transform robot_transform {glm::vec3(2.0f, 0.0f, 0.0f), 0.5f };
-  ogle::drawing::BasicModel robot_m { robot, lightShader, robot_transform };
+  // float robotscale = 0.5f;
+  ogle::Transform robot_transform{glm::vec3(2.0f, 0.0f, 0.0f), 0.5f};
+  ogle::drawing::BasicModel robot_m{robot, lightShader, robot_transform};
   draw_list.push_back(&robot_m);
-  
+
+  // auto rmr = projection * robot_transform.Model;
+  // std::cout << "Robot: " << glm::to_string(rmr) << std::endl;
+
   ogle::Model fighter("res/objects/fighter01.obj");
-  ogle::Transform ftransform {};
-  ogle::drawing::BasicModel fighter_m { fighter, lightShader, {} };
+  ogle::drawing::BasicModel fighter_m{
+      fighter, lightShader, {glm::vec3(0.0f, 1.0f, 1.5f), 0.5f}};
   draw_list.push_back(&fighter_m);
+
+  glm::vec3 fire_pos(2.0f, 0.0f, 2.0f);
+  ogle::Model fire_obj("res/objects/fire/PUSHILIN_campfire.obj");
+  ogle::drawing::BasicModel fire_model{fire_obj, lightShader, {fire_pos}};
+  draw_list.push_back(&fire_model);
 
   // floor:
   ogle::Mesh floor_mesh("res/floor.omf");
-  ogle::Transform floor_transform { glm::vec3(1.0f, -0.5f, 0.0f),
-				    glm::vec3(30.0f, 0.0f, 30.0f)};
+  auto floor_scale = glm::vec3(30.0f, 0.0f, 30.0f);
+  ogle::Transform floor_transform{glm::vec3(1.0f, -0.5f, 0.0f), floor_scale};
 
-  ogle::drawing::BasicMesh floor_d { floor_mesh, lightShader, floor_transform };
+  ogle::drawing::BasicMesh floor_d{floor_mesh, lightShader, floor_transform};
   draw_list.push_back(&floor_d);
 
   // floor 2?
-  glm::mat4 floor_m2;
-  auto floor_scale = glm::vec3(30.0f, 0.0f, 30.0f);
-  floor_m2 = glm::translate(floor_m2, glm::vec3(1.0f, -0.5f, 45.0f));
-  floor_m2 = glm::scale(floor_m2, floor_scale);
+  ogle::drawing::BasicMesh floor_d2{
+      floor_mesh, lightShader, {glm::vec3(1.0f, -0.5f, 45.0f), floor_scale}};
+  draw_list.push_back(&floor_d2);
 
   ogle::Mesh ceiling_mesh("res/ceiling.omf");
-  glm::mat4 ceiling_m;
-  ceiling_m = glm::translate(ceiling_m, glm::vec3(1.0f, 2.0f, 0.0f));
-  ceiling_m = glm::scale(ceiling_m, floor_scale);
+  ogle::drawing::BasicMesh ceiling_d{
+      ceiling_mesh, lightShader, {glm::vec3(1.0f, 2.0f, 0.0f), floor_scale}};
+  draw_list.push_back(&ceiling_d);
 
   // end floor
   std::vector<glm::vec3> positions = {
@@ -140,32 +153,29 @@ int main() {
       glm::vec3(1.0f, 0.0f, -4.0f), glm::vec3(3.0f, 0.0f, -4.0f),
   };
   ogle::Mesh crate_mesh("res/crate.omf");
-  //glm::mat4 crate_mat;
+
   std::vector<ogle::drawing::BasicMesh> crates;
   for (auto p : positions) {
     crates.push_back({crate_mesh, lightShader, {p}});
   }
-  for (auto& c : crates) {
+  for (auto &c : crates) {
     draw_list.push_back(&c);
   }
 
   // wall(s) ?
   ogle::Mesh wall_mesh("res/wall.omf");
-  glm::mat4 wall_mat;
-
   glm::vec3 wall_scale = glm::vec3(4.0f, 3.0f, 0.5f);
-
   std::vector<ogle::Transform> wall_ts = {
-      ogle::Transform(glm::vec3(0.0f, 0.5f, -8.0f), wall_scale),
-      ogle::Transform(glm::vec3(4.0f, 0.5f, -8.0f), wall_scale),
-      ogle::Transform(glm::vec3(6.25f, 0.5f, -6.25f),
-                      ogle::Rotation{90.0f, ogle::RotAxis::Y}, wall_scale),
+      {glm::vec3(0.0f, 0.5f, -8.0f), wall_scale},
+      {glm::vec3(4.0f, 0.5f, -8.0f), wall_scale},
+      {glm::vec3(6.25f, 0.5f, -6.25f), ogle::Rotation{90.0f, ogle::RotAxis::Y},
+       wall_scale},
   };
   std::vector<ogle::drawing::BasicMesh> wall_meshes;
   for (auto t : wall_ts) {
     wall_meshes.push_back({wall_mesh, lightShader, t});
   }
-  for (auto& w : wall_meshes) {
+  for (auto &w : wall_meshes) {
     draw_list.push_back(&w);
   }
 
@@ -177,35 +187,53 @@ int main() {
   ogle::Light light_s{lua.get<sol::table>("light")};
 
   // UI stuff
-  /*
-   float ui_verts[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-  };  
-  GLuint ui_vao, ui_vbo;
-  glGenVertexArrays(1, &ui_vao);
-  glGenBuffers(1, &ui_vbo);
-  glBindVertexArray(ui_vao);
-  glBindBuffer(GL_ARRAY_BUFFER, ui_vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(ui_verts), ui_verts, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
 
-  ogle::Shader ui_shader {"res/ui.vert", "res/ui.frag"};
-  */
-   // END UI STUFF
+  //  float ui_verts[] = {
+  //   -0.5f, -0.5f, 0.0f,
+  //    0.5f, -0.5f, 0.0f,
+  //   -0.5f,  0.5f, 0.0f,
+  //   0.5f, 0.5f, 0.0f,
+  //   0.5f, -0.5f, 0.0f,
+  //   -0.5f, 0.5f, 0.0f,
+  // };
+  // GLuint ui_vao, ui_vbo;
+  // glGenVertexArrays(1, &ui_vao);
+  // glGenBuffers(1, &ui_vbo);
+  // glBindVertexArray(ui_vao);
+  // glBindBuffer(GL_ARRAY_BUFFER, ui_vbo);
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(ui_verts), ui_verts, GL_STATIC_DRAW);
+  // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+  // (void*)0);
+  // glEnableVertexAttribArray(0);
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // glBindVertexArray(0);
+
+  // ogle::Shader ui_shader {"res/ui.vert", "res/ui.frag"};
+  // END UI STUFF
+
+  // sound stuff
+  ogle::sf::Audio audio;
+  if (!audio.init()) {
+    std::cout << "Failed to init audio" << std::endl;
+  }
+  ogle::sf::WavFx fire_buf("res/sfx/fire.wav");
+  ogle::sf::Source fire_source;
+  fire_source.set_buffer(fire_buf);
+  fire_source.set_position(fire_pos.x, fire_pos.y, fire_pos.z);
+  fire_source.set_repeat(true);
+  fire_source.play();
 
   // "loop"
   unsigned int lastTime = 0, currentTime = SDL_GetTicks();
 
+  bool debug = false;
   bool run = true;
   while (run) {
     // events
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
+      ImGui_ImplSdlGL3_ProcessEvent(&e);
+
       switch (e.type) {
       case SDL_QUIT:
         run = false;
@@ -218,10 +246,20 @@ int main() {
           std::cout << "---\nreloading lua\n";
           lua.do_file(startup);
         }
+        if (e.key.keysym.sym == SDLK_f) {
+          debug = !debug;
+          camera.set_debug(debug);
+          renderer.set_debug(debug);
+        }
+        if (e.key.keysym.sym == SDLK_g) {
+          auto cp = camera.get_pos();
+          std::cout << "Camera: " << glm::to_string(cp) << std::endl;
+        }
         break;
       }
     }
     // update
+    ImGui_ImplSdlGL3_NewFrame(renderer.get_window());
     // float dt = (float)SDL_GetTicks() / 1000.0f; // in s (seconds)
     lastTime = currentTime;
     currentTime = SDL_GetTicks();
@@ -233,21 +271,28 @@ int main() {
     light_s.position = camera.get_pos();
     light_s.direction = camera.get_dir();
 
+    // update audio
+    auto cpos = camera.get_pos();
+    audio.set_position(cpos.x, cpos.y, cpos.z);
+    auto cfront = camera.get_front();
+    auto cup = camera.get_up();
+    float cam_orient[6] = {cfront.x, cfront.y, cfront.z, cup.x, cup.y, cup.z};
+    audio.set_orientation(cam_orient);
+
     renderer.grab_mouse();
 
-    glm::mat4 view = camera.get_view();
+    ImGui::Text("Testing");
+    // static float fx = 0.0f;
+    // ImGui::InputFloat("x pos", &fx);
+    static glm::vec3 fpos;
+    ImGui::InputFloat3("pos", glm::value_ptr(fpos));
+    static glm::mat4 fmat;
+    ImGui::InputFloat4("model", glm::value_ptr(fmat));
+    if (ImGui::Button("+")) {
+      // std::cout << "move" << fx << std::endl;
+    }
 
-    // rotate light
-    // lightPos.x = 1.0f + sin((currentTime / 1000.0f) * 2.0f);
-    // lightPos.z = sin((currentTime / 1000.0f) / 2.0f) * 1.0f;
-    // ct seconds
-    /*
-    float dx = currentTime / 1000.0f;
-    float r = 1.0f;
-    lightPos.x = 1.0f + (sin(dx / 3.0f) * r);// * 2.0f);
-    lightPos.y = 4.0f - (std::abs(cos(dx / 3.0f)) * r); // / 2, 1.0f;
-    // */
-    // lightPos.z = 2.0f + cos(currentTime / 1000.0f);
+    glm::mat4 view = camera.get_view();
 
     // render
     renderer.clear();
@@ -269,12 +314,6 @@ int main() {
       d->Draw();
     }
 
-    lightShader.set_mat4("model", floor_m2);
-    floor_mesh.Draw(lightShader);
-    
-    lightShader.set_mat4("model", ceiling_m);
-    ceiling_mesh.Draw(lightShader);
-
     // draw skybox
     skybox.Draw(view, projection);
 
@@ -284,21 +323,23 @@ int main() {
     f_shader.use();
     text.Draw(f_shader);
     sample.Draw(f_shader);
-    
-    /*
-    ui_shader.use();
-    glBindVertexArray(ui_vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    */
-    // end render
+
+    // ui_shader.use();
+    // glBindVertexArray(ui_vao);
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    if (debug) {
+      ImGui::Render();
+      ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+    } else {
+      ImGui::EndFrame();
+    }
 
     renderer.swap();
   }
 
-  // de-allocation
-  // TODO: Fix this!! Mesh dtor should clean up
-  // glDeleteVertexArrays(1, &VAO);
-  // glDeleteBuffers(1, &VBO);
-  // glDeleteBuffers(1, &EBO); // unused atm
+  // don't forget de-allocations!
+  ImGui_ImplSdlGL3_Shutdown();
+  ImGui::DestroyContext();
 
+  std::cout << "Exiting main" << std::endl;
 }

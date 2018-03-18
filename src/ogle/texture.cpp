@@ -40,6 +40,15 @@ Texture::Texture(const std::string &filename) {
     glGenerateMipmap(GL_TEXTURE_2D);
   } else {
     std::cout << "Failed to load texture: " << filename << std::endl;
+    unsigned char no_tx[] = {
+			     255, 0, 0, 0,
+			     255, 255, 255, 0,
+			     255, 255, 255, 0,
+			     255, 0, 0, 0
+    };
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, no_tx);
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
   stbi_image_free(data);
 
@@ -126,8 +135,10 @@ Texture::Texture(Texture &&other) : ID(0), Type(std::string()) {
   other.Type = std::string();
 }
 Texture &Texture::operator=(Texture &&other) {
-  std::swap(ID, other.ID);
-  std::swap(Type, other.Type);
+  if (this != &other) {
+    std::swap(ID, other.ID);
+    std::swap(Type, other.Type);
+  }
 
   return *this;
 }

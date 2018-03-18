@@ -12,7 +12,7 @@ namespace ogle {
 class RenderText {
 public:
   RenderText(const std::string &text, ogle::Font& font, glm::mat4 projection);
-  // TODO: ~RenderText() clean up
+  ~RenderText();
 
   void set_text(const std::string& text);
   void set_position(GLfloat x, GLfloat y);

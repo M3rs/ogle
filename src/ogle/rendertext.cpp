@@ -4,10 +4,10 @@
 
 namespace ogle {
 
-RenderText::RenderText(const std::string &text, ogle::Font& font, glm::mat4 projection)
-  : text(text), font(font), color(glm::vec3(0.0, 0.0, 0.0)), projection(projection),
-    X(0.0), Y(0.0), scale(1.0)
-{
+RenderText::RenderText(const std::string &text, ogle::Font &font,
+                       glm::mat4 projection)
+    : text(text), font(font), color(glm::vec3(0.0, 0.0, 0.0)),
+      projection(projection), X(0.0), Y(0.0), scale(1.0) {
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glBindVertexArray(VAO);
@@ -19,32 +19,30 @@ RenderText::RenderText(const std::string &text, ogle::Font& font, glm::mat4 proj
   glBindVertexArray(0);
 }
 
-void RenderText::set_text(const std::string& text)
-{
-  this->text = text;
+RenderText::~RenderText() {
+  if (VAO) {
+    glDeleteVertexArrays(1, &VAO);
+  }
+  if (VBO) {
+    glDeleteBuffers(1, &VBO);
+  }
 }
 
-void RenderText::set_position(GLfloat x, GLfloat y)
-{
+void RenderText::set_text(const std::string &text) { this->text = text; }
+
+void RenderText::set_position(GLfloat x, GLfloat y) {
   X = x;
   Y = y;
 }
 
-void RenderText::set_color(const glm::vec3& color)
-{
-  this->color = color;
-}
+void RenderText::set_color(const glm::vec3 &color) { this->color = color; }
 
-void RenderText::set_scale(GLfloat scale)
-{
-  this->scale = scale;
-}
+void RenderText::set_scale(GLfloat scale) { this->scale = scale; }
 
-void RenderText::Draw(ogle::Shader &shader)
-{
+void RenderText::Draw(ogle::Shader &shader) {
   GLfloat x = X;
   GLfloat y = Y;
-  
+
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -56,11 +54,11 @@ void RenderText::Draw(ogle::Shader &shader)
   // Can I just re-use this for all text? (probably??)
   glBindVertexArray(VAO);
 
-  auto& Characters = font.get_characters();
+  auto &Characters = font.get_characters();
 
   std::string::const_iterator c;
   for (c = text.begin(); c != text.end(); c++) {
-    //ogle::Character &ch = Characters[*c];
+    // ogle::Character &ch = Characters[*c];
     const ogle::Character &ch = Characters.at(*c);
 
     GLfloat xpos = x + ch.Bearing.x * scale;
@@ -92,5 +90,4 @@ void RenderText::Draw(ogle::Shader &shader)
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_BLEND);
 }
-  
 }

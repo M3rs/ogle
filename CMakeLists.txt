@@ -13,6 +13,8 @@ IF (APPLE)
 	SET(GLLIB ${OPENGL_LIBRARY})
 ENDIF (APPLE)
 
+find_library(OAL OpenAL)    
+
 # "FORCE" clears the cache (which has been causing a lot of issues
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -g" CACHE STRING "compile flags" FORCE)
 
@@ -35,6 +37,7 @@ include_directories(
 	"${AIMP}/include"
 	"~/Documents/src/ogle/include"
 	"${FT}/include/freetype2"
+	"~/Documents/src/ogle/include/imgui"
 )
 
 link_directories(
@@ -50,4 +53,4 @@ file (GLOB_RECURSE SOURCES "src/*.cpp" "src/*.c")
 
 add_executable(ogle ${SOURCES})
 
-target_link_libraries(ogle sdl2 ${GLLIB} assimp lua freetype) # sdl2_image lua)
+target_link_libraries(ogle sdl2 ${GLLIB} assimp lua freetype ${OAL}) # sdl2_image lua)

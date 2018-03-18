@@ -41,7 +41,8 @@ Mesh::Mesh(const std::string &filename) {
     ss >> line_type;
     switch (line_type) {
     case '#': // comments
-      std::cout << s << std::endl;
+      //std::cout << s << std::endl;
+      DEBUG(s);
       break;
     case 'v': { // vertex info
       glm::vec3 pos, normal;
@@ -112,7 +113,8 @@ void Mesh::Draw(ogle::Shader &shader) {
 
 // for move
 Mesh::Mesh() : VAO(0), VBO(0), EBO(0) {}
-Mesh::Mesh(Mesh &&other) {
+
+Mesh::Mesh(Mesh &&other) : VAO(0), VBO(0), EBO(0) {
   std::swap(vertices, other.vertices);
   std::swap(indices, other.indices);
   std::swap(textures, other.textures);
@@ -122,14 +124,17 @@ Mesh::Mesh(Mesh &&other) {
   std::swap(EBO, other.EBO);
 }
 
+// better move assignment?
 Mesh &Mesh::operator=(Mesh &&other) {
-  std::swap(vertices, other.vertices);
-  std::swap(indices, other.indices);
-  std::swap(textures, other.textures);
+  if (this != &other) {
+    std::swap(vertices, other.vertices);
+    std::swap(indices, other.indices);
+    std::swap(textures, other.textures);
 
-  std::swap(VAO, other.VAO);
-  std::swap(VBO, other.VBO);
-  std::swap(EBO, other.EBO);
+    std::swap(VAO, other.VAO);
+    std::swap(VBO, other.VBO);
+    std::swap(EBO, other.EBO);
+  }
 
   return *this;
 }
