@@ -1,0 +1,20 @@
+#ifndef OGLE_SF_SFX_H
+#define OGLE_SF_SFX_H
+
+#include <OpenAL/al.h>
+
+namespace sf {
+
+class SFx {
+public:
+  SFx(const char *file);
+  virtual ~SFx();
+
+  ALuint get() const;
+
+protected:
+  ALuint buffer;
+};
+}
+
+#endif // OGLE_SF_SFX_H

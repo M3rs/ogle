@@ -53,7 +53,9 @@ ALenum wave_format(wav_hdr* wave)
     break;
   }
 
-  return 0;
+  //return 0;
+  // defaulting to stereo 16 for unknowns?
+  return AL_FORMAT_STEREO16;
 }
 }
 
@@ -61,7 +63,6 @@ namespace ogle {
 namespace sf {
 
   WavFx::WavFx(const char *file)
-    : buffer(0)
   {
     // TODO: check file exists
     std::ifstream ifs(file, std::fstream::binary);
@@ -82,17 +83,6 @@ namespace sf {
 		 data.size(),
 		 wh.SamplesPerSec);
     check_err("buffer data");
-  }
-
-  WavFx::~WavFx() {
-    if (buffer) {
-      alDeleteBuffers(1, &buffer);
-      buffer = 0;
-    }
-  }
-
-  ALuint WavFx::get() const {
-    return buffer;
   }
 }
 }

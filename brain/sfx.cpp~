@@ -1,0 +1,17 @@
+#include "sfx.hpp"
+
+namespace sf{
+
+  SFx::~SFx()
+  {
+    if (buffer) {
+      alDeleteBuffers(1, &buffer);
+    }
+  }
+  
+ALuint SFx::get() const
+{
+  return buffer;
+}
+
+}

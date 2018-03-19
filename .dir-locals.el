@@ -7,4 +7,5 @@
    "/Users/andy/Documents/src/clones/assimp/include"
    "/usr/local/Cellar/sdl2/2.0.7/include"
    "/usr/local/Cellar/freetype/2.8.1/include"
+   "/usr/local/Cellar/libvorbis/1.3.5/include"
    )))

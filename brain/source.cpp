@@ -1,7 +1,7 @@
 #include "source.h"
 
 #include "sff.hpp"
-#include "wav.h"
+#include "sfx.hpp"
 
 namespace sf {
 
@@ -18,7 +18,13 @@ namespace sf {
     }
   }
 
-  void Source::set_buffer(const sf::WavFx &wav)
+  void Source::set_buffer(ALuint buffer)
+  {
+    alSourcei(source, AL_BUFFER, buffer);
+    check_err("set source buffer");
+  }
+  
+  void Source::set_buffer(const sf::SFx &wav)
   {
     alSourcei(source, AL_BUFFER, wav.get());
     check_err("set source buffer");
@@ -41,6 +47,11 @@ namespace sf {
   void Source::set_repeat(bool repeat)
   {
     alSourcei(source, AL_LOOPING, repeat ? 1 : 0);
+  }
+  void Source::set_relative(bool relative)
+  {
+    alSourcei(source, AL_SOURCE_RELATIVE, relative? AL_TRUE:AL_FALSE);
+    check_err("set relative");
   }
   bool Source::is_playing() const
   {

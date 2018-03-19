@@ -1,20 +1,15 @@
 #ifndef OGLE_SF_WAV_H
 #define OGLE_SF_WAV_H
 
-#include <OpenAL/al.h>
+#include "ogle/sf/sfx.hpp"
+//#include <OpenAL/al.h>
 
 namespace ogle {
 namespace sf {
 
-class WavFx {
+  class WavFx : public SFx {
 public:
   WavFx(const char *file);
-  ~WavFx();
-
-  ALuint get() const;
-
-private:
-  ALuint buffer;
 };
 }
 }

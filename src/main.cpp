@@ -221,8 +221,26 @@ int main() {
   fire_source.set_buffer(fire_buf);
   fire_source.set_position(fire_pos.x, fire_pos.y, fire_pos.z);
   fire_source.set_repeat(true);
+  fire_source.set_gain(0.6f);
   fire_source.play();
 
+  ogle::sf::OggFx bgm_ogg("res/sfx/Holst-_venus.ogg");
+  ogle::sf::Source bgm_source;
+  bgm_source.set_buffer(bgm_ogg);
+  bgm_source.set_relative(true);
+  bgm_source.set_repeat(true);
+  bgm_source.set_gain(0.5f);
+  bgm_source.play();
+
+  ogle::sf::WavFx foot_buf("res/sfx/footsteps.wav");
+  ogle::sf::Source footsteps;
+  footsteps.set_buffer(foot_buf);
+  footsteps.set_repeat(true);
+  footsteps.set_gain(0.3f);
+  //footsteps.set_relative(true);
+  bool walking = false;
+
+  const Uint8* keys = SDL_GetKeyboardState(NULL);
   // "loop"
   unsigned int lastTime = 0, currentTime = SDL_GetTicks();
 
@@ -278,6 +296,23 @@ int main() {
     auto cup = camera.get_up();
     float cam_orient[6] = {cfront.x, cfront.y, cfront.z, cup.x, cup.y, cup.z};
     audio.set_orientation(cam_orient);
+
+
+
+    if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_A]
+	|| keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_D]) {
+      footsteps.set_position(cpos.x, cpos.y - 1, cpos.z);
+      if (!walking) {
+	// calling play resets the position if it is already playing
+	// important to only do this once
+	footsteps.play();
+	walking = true;
+      }
+      //std::cout << "playing\n";
+    } else {
+      footsteps.pause();
+      walking = false;
+    }
 
     renderer.grab_mouse();
 

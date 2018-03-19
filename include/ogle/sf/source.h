@@ -7,7 +7,7 @@ namespace ogle {
 namespace sf {
 
   // fwd
-  class WavFx;
+  class SFx;
   
   /// Sound Source
   class Source {
@@ -15,13 +15,17 @@ namespace sf {
     Source();
     ~Source();
 
-    void set_buffer(const WavFx& wav);
+    void set_buffer(const SFx& wav);
     // TODO: take glm::vec3
     void set_position(float x, float y, float z);
 
     void play() const;
+    void pause() const;
     void stop() const;
     void set_repeat(bool repeat);
+    void set_relative(bool relative);
+    /// gain means volume
+    void set_gain(float gain);
     bool is_playing() const;
     
   private:

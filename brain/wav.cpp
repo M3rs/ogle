@@ -1,4 +1,4 @@
-#include "wav.h"
+#include "wav.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -53,14 +53,14 @@ ALenum wave_format(wav_hdr* wave)
     break;
   }
 
-  return 0;
+  //return 0;
+	return AL_FORMAT_STEREO16;
 }
 }
 
 namespace sf {
 
   WavFx::WavFx(const char *file)
-    : buffer(0)
   {
     // TODO: check file exists
     std::ifstream ifs(file, std::fstream::binary);
@@ -74,6 +74,8 @@ namespace sf {
 
     alGenBuffers(1, &buffer);
     check_err("gen buffer");
+		
+		std::cout << wh.blockAlign << std::endl;
 
     alBufferData(buffer,
 		 wave_format(&wh),
@@ -81,16 +83,5 @@ namespace sf {
 		 data.size(),
 		 wh.SamplesPerSec);
     check_err("buffer data");
-  }
-
-  WavFx::~WavFx() {
-    if (buffer) {
-      alDeleteBuffers(1, &buffer);
-      buffer = 0;
-    }
-  }
-
-  ALuint WavFx::get() const {
-    return buffer;
   }
 }
